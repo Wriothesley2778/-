@@ -1,0 +1,124 @@
+import math
+import os
+
+
+#定义运算
+def add(a,b):
+    return a+b
+
+def subtract(a,b):
+    return a-b
+
+def multiply(a,b):
+    return a*b
+
+def divide(a,b):
+    if b==0:
+        raise ValueError('除数不能等于0')
+    return a/b
+
+def power(a,b):
+    return a**b
+
+def sqare_root(a):
+    if a<0:
+        raise ValueError('不能对负数开方')
+    return math.sqrt(a)
+
+def calculator(operation,num1,num2=None):
+    operations={'1':add,'2':subtract,'3':multiply,'4':divide,'5':power}
+    if operation=='6':
+        return sqare_root(num1)
+    elif operation in operations:
+        if num2 is None:
+            raise ValueError(f'{operation}需要两个数字')
+        return operations[operation](num1,num2)
+    else:
+        raise ValueError(f'不支持的操作：{operation}')
+
+operator={'1':'+','2':'-','3':'*','4':'/','5':'**'}
+
+
+#历史记录
+def save_history(record,filename='calculator_history.txt'):
+    with open(filename,'a',encoding='utf-8') as f:
+        f.write(f'{record}\n')
+
+def load_history(filename='calculator_history.txt'):
+    if not os.path.exists(filename):
+        return []
+    with open(filename, 'r', encoding='utf-8') as f:
+        return f.readline()
+
+def display_history(filename='calculator_history.txt'):
+    history=load_history(filename)
+    if not history:
+        print('暂无历史记录')
+        return
+    print('历史计算记录：\n')
+    with open(filename, 'r', encoding='utf-8') as f:
+     text=f.read()
+    print(text)
+
+
+def get_number(prompt):
+    while True:
+        try:
+            num=float(input(prompt))
+            return num
+        except ValueError:
+            print("输入无效，请输入数字")
+
+#展示并获取操作
+def get_operation():
+    while True:
+        print("\n可用操作:")
+        print("  1 : 加 法")
+        print("  2 : 减 法")
+        print("  3 : 乘 法")
+        print("  4 : 除 法")
+        print("  5 : 幂 运 算")
+        print("  6 : 开 方")
+        print("  7 : 查 看 历 史")
+        print("  8 : 退 出")
+
+        op=input('\n请选择操作（输入对应序号）')
+        if op in ['1','2','3','4','5','6','7','8']:
+            return op
+        print('请输入正确的序号')
+
+
+#主程序
+def main():
+    print('欢迎使用数学计算器!')
+    print('支持加减乘除，幂运算，开方')
+    print('历史记录自动保存到本地文件')
+    while True:
+        operation=get_operation()
+        if operation=='8':
+            print('感谢使用计算器，再见！')
+            break
+        if operation=='7':
+            display_history()
+            continue
+        try:
+            if operation=='6':
+                num1=get_number('请输入要开方的数：')
+                result=calculator(operation,num1)
+                record=f"{num1}的平方根 = {result}"
+            else:
+                num1=get_number('请输入第一个数：')
+                num2=get_number('请输入第二个数：')
+                result=calculator(operation,num1,num2)
+                record=f'{num1}{operator[operation]}{num2}={result}'
+            print(record)
+            print(f'\n{record}')
+            save_history(record)
+
+        except ValueError as e:
+            print(f"\n错误: {e}")
+        except Exception as e:
+            print(f"\n未知错误: {e}")
+
+if __name__ == "__main__":
+    main()
